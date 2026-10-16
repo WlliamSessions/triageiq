@@ -4,6 +4,9 @@ import { supabase } from "../../../lib/supabase";
 
 export const runtime = "nodejs";
 
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function POST(request: NextRequest) {
   try {
     let body: unknown;
@@ -26,9 +29,7 @@ export async function POST(request: NextRequest) {
       body === null ||
       !("investigationId" in body) ||
       typeof body.investigationId !== "string" ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        body.investigationId
-      ) ||
+      !uuidPattern.test(body.investigationId) ||
       !("decision" in body) ||
       (body.decision !== "approved" &&
         body.decision !== "rejected") ||
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the investigation exists.
+    // Verify that the investigation exists.
     const { data: investigation, error: lookupError } =
       await supabase
         .from("investigations")
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save the complete approval in one database operation.
+    // Save the human review decision.
     const { data: saved, error: insertError } = await supabase
       .from("approval_decisions")
       .insert({
@@ -156,8 +157,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         error: "APPROVAL_FAILED",
-        message:
-          "The approval could not be saved. Check the server logs.",
+        message: "The approval could not be saved.",
       },
       { status: 500 }
     );
