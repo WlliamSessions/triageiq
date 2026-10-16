@@ -35,13 +35,67 @@ Select a ticket and run an AI investigation to see the agent retrieve diagnostic
 
 All customer information, documentation, logs, and diagnostic data are fictional.
 
+## System Architecture
+
+```mermaid
+flowchart TD
+    A["Support Engineer / Portfolio Visitor"]
+    B["Next.js / React Dashboard"]
+    C["Next.js Server API Routes"]
+    D["OpenAI Responses API"]
+    E["Backend Diagnostic Tools"]
+    F["Fictional BookFlow Data"]
+    G[("Supabase PostgreSQL")]
+    H["Human Review Workflow"]
+
+    A --> B
+    B <-->|"HTTPS / JSON"| C
+    C <-->|"AI requests and responses"| D
+    D -->|"Requests diagnostic function calls"| C
+    C -->|"Validates and executes tools"| E
+    E -->|"Reads diagnostic data"| F
+    F -->|"Returns results"| E
+    E -->|"Tool results"| C
+    C -->|"Tool outputs"| D
+    C <-->|"Store and retrieve investigations"| G
+    B --> H
+    H -->|"Approve / Reject"| C
+    C -->|"Persist review decision"| G
+```
+
+### Architecture Overview
+
+**Frontend — Next.js and React**
+
+The dashboard lets users select support tickets, launch investigations, inspect diagnostic activity, and review AI-generated recommendations.
+
+**Backend — Next.js API Routes**
+
+Server-side API routes receive requests, validate inputs, orchestrate the AI investigation, execute diagnostic tools, and communicate with Supabase.
+
+**AI Agent — OpenAI Responses API**
+
+The model determines which diagnostic tools to request based on the ticket and available evidence. The backend executes the requested functions and returns their results to the model.
+
+**Diagnostic Tools — Fictional BookFlow Systems**
+
+Five diagnostic functions provide booking status, application logs, customer configuration, service health, and documentation search.
+
+**Database — Supabase PostgreSQL**
+
+Supabase stores completed investigations, diagnostic activity, generated reports, and human review decisions.
+
+**Human Review**
+
+Reviewers can approve, reject, or edit recommendations. The demo records decisions without executing customer-facing remediation.
+
 ## Key Capabilities
 
 ### Autonomous AI Investigation
 
 Uses the OpenAI Responses API with function calling.
 
-The agent selects and executes diagnostic tools based on the support ticket and the evidence collected.
+The agent selects diagnostic tools based on the support ticket and evidence collected.
 
 Available tools:
 
